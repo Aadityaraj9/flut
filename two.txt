@@ -1,0 +1,20 @@
+body: LayoutBuilder(
+  builder: (context, c) {
+    // Small screen (width < 600) → Column (stacked vertically)
+    if (c.maxWidth < 600) {
+      return const Column(
+        children: [
+          Card(child: ListTile(leading: Icon(Icons.people), title: Text('Students'))),
+          Card(child: ListTile(leading: Icon(Icons.book), title: Text('Courses'))),
+        ],
+      );
+    }
+    // Large screen → Row (side by side, each takes half width)
+    return const Row(
+      children: [
+        Expanded(child: Card(child: ListTile(leading: Icon(Icons.people), title: Text('Students')))),
+        Expanded(child: Card(child: ListTile(leading: Icon(Icons.book), title: Text('Courses')))),
+      ],
+    );
+  },
+),
