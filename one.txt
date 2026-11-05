@@ -1,36 +1,95 @@
-body: Column(
-  children: [
-    Container(
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.all(10),
-      color: Colors.lightBlue.shade100,
-      child: const Text('Student Profile'),
-    ),
-    const Text('Raj'),
-    const Text('CSE'),
-    Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: const [
-        Icon(Icons.home),
-        Icon(Icons.person),
-        Icon(Icons.settings),
-      ],
-    ),
-    const Card(
-      child: ListTile(
-        leading: Icon(Icons.book),
-        title: Text('Flutter'),
-        subtitle: Text('Mobile App Development'),
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: const MyHomePage(title: 'Student Profile'),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  // These were for the counter; kept so you don't have to delete the lines.
+  int _counter = 0;
+
+  void _incrementCounter() {
+    setState(() {
+      _counter++;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
       ),
-    ),
-    Expanded(
-      child: ListView(
-        children: const [
-          ListTile(leading: Icon(Icons.book), title: Text('Flutter')),
-          ListTile(leading: Icon(Icons.cloud), title: Text('Cloud')),
-          ListTile(leading: Icon(Icons.code), title: Text('Programming')),
+      body: Column(
+        children: [
+          // Container = a box with padding and margin
+          Container(
+            padding: const EdgeInsets.all(20),
+            margin: const EdgeInsets.all(10),
+            color: Colors.lightBlue.shade100,
+            child: const Text('Student Profile'),
+          ),
+
+          // Simple text lines
+          const Text('Raj'),
+          const Text('CSE'),
+
+          // Row = places items horizontally, evenly spaced
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: const [
+              Icon(Icons.home),
+              Icon(Icons.person),
+              Icon(Icons.settings),
+            ],
+          ),
+
+          // Card = a rounded elevated box with a list item inside
+          const Card(
+            child: ListTile(
+              leading: Icon(Icons.book),
+              title: Text('Flutter'),
+              subtitle: Text('Mobile App Development'),
+            ),
+          ),
+
+          // Expanded = gives ListView the remaining height (required!)
+          // ListView = scrollable list of items
+          Expanded(
+            child: ListView(
+              children: const [
+                ListTile(leading: Icon(Icons.book), title: Text('Flutter')),
+                ListTile(leading: Icon(Icons.cloud), title: Text('Cloud')),
+                ListTile(leading: Icon(Icons.code), title: Text('Programming')),
+              ],
+            ),
+          ),
         ],
       ),
-    ),
-  ],
-),
+      // Replaced floatingActionButton with null so you don't need to delete the block
+      floatingActionButton: null,
+    );
+  }
+}
