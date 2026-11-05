@@ -1,0 +1,82 @@
+Here's the **simplest possible** version of Experiment 9. Only the essentials, no counter code, no extra variables.
+
+**Setup (same as before):** In `pubspec.yaml` add `http: ^1.1.0`, then run `flutter pub get`.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+void main() => runApp(const MyApp());
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: PostsPage(),
+    );
+  }
+}
+
+class PostsPage extends StatefulWidget {
+  const PostsPage({super.key});
+  @override
+  State<PostsPage> createState() => _PostsPageState();
+}
+
+class _PostsPageState extends State<PostsPage> {
+  List posts = [];        // will hold the data from API
+  bool loading = true;    // show spinner while waiting
+
+  @override
+  void initState() {
+    super.initState();
+    fetchPosts();         // start fetching as soon as screen opens
+  }
+
+  // Call the API and save the result
+  Future<void> fetchPosts() async {
+    final response = await http.get(
+      Uri.parse('https://jsonplaceholder.typicode.com/posts'),
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        posts = jsonDecode(response.body);   // JSON text → Dart list
+        loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Posts from the Web')),
+      body: loading
+          ? const Center(child: CircularProgressIndicator())   // loading screen
+          : ListView.builder(
+              itemCount: posts.length,
+              itemBuilder: (context, i) {
+                return ListTile(
+                  leading: Text('${i + 1}'),
+                  title: Text(posts[i]['title']),
+                );
+              },
+            ),
+    );
+  }
+}
+```
+
+---
+
+**What it does (3 steps):**
+1. `initState()` → calls `fetchPosts()` when screen opens
+2. `http.get(...)` → asks the API for data
+3. `jsonDecode(...)` + `setState(...)` → saves data and redraws the list
+
+**That's it.** Run it → you'll see 100 posts in a scrollable list.
+
+👉 Say **"10"** for Android build, or **"11"** for iOS build.
