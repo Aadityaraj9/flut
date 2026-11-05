@@ -1,0 +1,75 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Web',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      // Change the title here
+      home: const MyHomePage(title: 'Flutter Web Application'),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  // These were for the counter; kept so you don't have to delete the lines.
+  int _counter = 0;
+
+  void _incrementCounter() {
+    setState(() {
+      _counter++;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // App bar with the title
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+
+      // LayoutBuilder gives us the current screen width (constraints.maxWidth)
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          // If window is narrow (< 600px), show mobile text
+          if (constraints.maxWidth < 600) {
+            return const Center(
+              child: Text(
+                'Mobile Web Layout',
+                style: TextStyle(fontSize: 24),
+              ),
+            );
+          }
+
+          // If window is wide (>= 600px), show desktop text
+          return const Center(
+            child: Text(
+              'Desktop Web Layout',
+              style: TextStyle(fontSize: 32),
+            ),
+          );
+        },
+      ),
+
+      // Replaced floatingActionButton with null so you don't need to delete the block
+      floatingActionButton: null,
+    );
+  }
+}
