@@ -1,0 +1,156 @@
+# Experiment 9: HTTP API
+
+Create project:
+```
+flutter create api_app
+cd api_app
+code .
+```
+
+**Setup — in `pubspec.yaml`, add under `dependencies:`**
+```yaml
+  http: ^1.1.0
+```
+Then run `flutter pub get`.
+
+Here is the **whole code** (built on your skeleton, no deleting, with comments):
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;   // for making HTTP requests
+import 'dart:convert';                     // for jsonDecode()
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      // Change title here
+      home: const MyHomePage(title: 'Posts from the Web'),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  // ---------- STATE ----------
+  List posts = [];       // holds the JSON data from the API
+  bool loading = true;   // true while fetching
+  String error = '';     // error message (empty = no error)
+
+  // These were for the counter; kept so you don't have to delete the lines.
+  int _counter = 0;
+
+  void _incrementCounter() {
+    setState(() {
+      _counter++;
+    });
+  }
+
+  // ---------- API FUNCTION ----------
+  Future<void> fetchData() async {
+    try {
+      // Send GET request to the API
+      final response = await http.get(
+        Uri.parse('https://jsonplaceholder.typicode.com/posts'),
+      );
+
+      // If status is 200 (OK), decode the JSON
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);   // convert JSON text → Dart list
+        setState(() {
+          posts = data;       // save data
+          loading = false;    // stop loading spinner
+        });
+      } else {
+        // If not 200, show error
+        setState(() {
+          error = 'Failed to load data (status ${response.statusCode})';
+          loading = false;
+        });
+      }
+    } catch (e) {
+      // If internet fails / other error
+      setState(() {
+        error = 'Error: $e';
+        loading = false;
+      });
+    }
+  }
+
+  // Runs once when screen opens — start fetching immediately
+  @override
+  void initState() {
+    super.initState();
+    fetchData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+
+      // Show loading / error / list depending on state
+      body: loading
+          ? const Center(child: CircularProgressIndicator())        // loading
+          : error.isNotEmpty
+              ? Center(child: Text(error))                          // error
+              : ListView.builder(                                   // success
+                  itemCount: posts.length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      leading: Text('${index + 1}'),                // number
+                      title: Text(posts[index]['title']),           // post title
+                      subtitle: Text(posts[index]['body']),         // post body
+                    );
+                  },
+                ),
+
+      // Replaced floatingActionButton with null so you don't need to delete the block
+      floatingActionButton: null,
+    );
+  }
+}
+```
+
+---
+
+## What each key part means
+
+| Part | Meaning |
+|---|---|
+| `http.get(Uri.parse(url))` | Sends a GET request to the API |
+| `response.statusCode == 200` | Means "OK" — request succeeded |
+| `jsonDecode(response.body)` | Turns the JSON text into a Dart `List` |
+| `initState()` | Runs once when screen opens — we call `fetchData()` here |
+| `loading` | Shows spinner while waiting for data |
+| `error` | Shows error if internet fails |
+| `ListView.builder` | Renders each post as a list item |
+
+---
+
+**Test:** Run `flutter run` → after a second, you'll see a list of posts with titles and bodies. If you turn off internet → you'll see an error message.
+
+**The 3 lines that matter:**
+1. `http.get(...)` — call the API
+2. `jsonDecode(response.body)` — turn JSON into Dart data
+3. `setState(...)` — redraw screen with the new data
+
+👉 Say **"10"** for Android build, or **"11"** for iOS build.
