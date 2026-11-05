@@ -1,0 +1,36 @@
+body: Column(
+  children: [
+    Container(
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.all(10),
+      color: Colors.lightBlue.shade100,
+      child: const Text('Student Profile'),
+    ),
+    const Text('Raj'),
+    const Text('CSE'),
+    Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: const [
+        Icon(Icons.home),
+        Icon(Icons.person),
+        Icon(Icons.settings),
+      ],
+    ),
+    const Card(
+      child: ListTile(
+        leading: Icon(Icons.book),
+        title: Text('Flutter'),
+        subtitle: Text('Mobile App Development'),
+      ),
+    ),
+    Expanded(
+      child: ListView(
+        children: const [
+          ListTile(leading: Icon(Icons.book), title: Text('Flutter')),
+          ListTile(leading: Icon(Icons.cloud), title: Text('Cloud')),
+          ListTile(leading: Icon(Icons.code), title: Text('Programming')),
+        ],
+      ),
+    ),
+  ],
+),
