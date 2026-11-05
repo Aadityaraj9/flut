@@ -1,0 +1,109 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: const MyHomePage(title: 'Student Registration'),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  // Form ID — used to validate all fields at once
+  final _formKey = GlobalKey<FormState>();
+
+  // Tracks whether form was submitted successfully
+  bool _submitted = false;
+
+  // These were for the counter; kept so you don't have to delete the lines.
+  int _counter = 0;
+
+  void _incrementCounter() {
+    setState(() {
+      _counter++;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              // Student Name field (with validation)
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Student Name'),
+                validator: (v) {
+                  if (v == null || v.isEmpty) {
+                    return 'Enter student name';
+                  }
+                  return null;
+                },
+              ),
+
+              // Email field
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Email'),
+                keyboardType: TextInputType.emailAddress,
+              ),
+
+              // Password field (dots)
+              TextFormField(
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Password'),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Submit button
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _submitted = _formKey.currentState!.validate();
+                  });
+                },
+                child: const Text('Submit'),
+              ),
+
+              // Shows only after successful submit
+              if (_submitted)
+                const Padding(
+                  padding: EdgeInsets.only(top: 20),
+                  child: Text(
+                    'Form submitted successfully',
+                    style: TextStyle(color: Colors.green, fontSize: 18),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+      // Replaced floatingActionButton with null so you don't need to delete the block
+      floatingActionButton: null,
+    );
+  }
+}
