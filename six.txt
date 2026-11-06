@@ -1,0 +1,91 @@
+# Experiment 6: Animations (Simplest Version)
+
+Create project:
+```
+flutter create animation_app
+cd animation_app
+code .
+```
+
+**Whole `main.dart`** — just one box that grows/shrinks when you tap the button:
+
+```dart
+import 'package:flutter/material.dart';
+
+void main() => runApp(const MyApp());
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: AnimationPage(),
+    );
+  }
+}
+
+class AnimationPage extends StatefulWidget {
+  const AnimationPage({super.key});
+  @override
+  State<AnimationPage> createState() => _AnimationPageState();
+}
+
+class _AnimationPageState extends State<AnimationPage> {
+  bool isLarge = false;   // tracks the current size
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Animations')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // AnimatedContainer — smoothly animates size changes
+            AnimatedContainer(
+              duration: const Duration(seconds: 1),   // 1-second animation
+              width: isLarge ? 300 : 150,             // target width
+              height: isLarge ? 300 : 150,            // target height
+              color: Colors.deepPurple,                // box colour
+              child: const Center(
+                child: Text(
+                  'Flutter',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+
+            // Button toggles size → animation plays
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  isLarge = !isLarge;    // flip true/false
+                });
+              },
+              child: const Text('Animate'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+```
+
+---
+
+**What it does (3 steps):**
+
+| Part | Meaning |
+|---|---|
+| `bool isLarge = false` | State: tracks if box is small (false) or large (true) |
+| `AnimatedContainer(width: isLarge ? 300 : 150, ...)` | When `isLarge` changes, Flutter **animates** the size change over 1 second |
+| `setState(() { isLarge = !isLarge; })` | Flips the state → triggers animation |
+
+**The one key widget:** `AnimatedContainer` — you just change its width/height, and it **smoothly animates** to the new size. No manual animation code needed.
+
+**Test:** Run → see purple box. Tap **Animate** → box grows. Tap again → shrinks. Both animate smoothly.
+
+👉 Say **"10"** or **"11"** for build target experiments.
