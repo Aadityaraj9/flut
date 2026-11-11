@@ -1,10 +1,8 @@
 import ollama
 import ast
 
-# 1. GENERATOR (Ask CodeGemma)
 print("Generating code using CodeGemma...")
 
-# FIX 1: Move """ to the left and add a comment
 prompt = """def insertion_sort_function(arr):
     # Write the insertion sort logic here
 """
@@ -24,12 +22,10 @@ while True:
     if start != -1:
         code = cleaned[start:]
         
-        # CHOP OFF everything after "return arr"
         end = code.find("return arr")
         if end != -1:
             code = code[:end + 10]
             
-            # FIX 2: Lowered to 20 so it doesn't get stuck in an infinite loop
             if len(code) > 20 and "pass" not in code:
                 break
                 
@@ -39,20 +35,16 @@ print("\n--- GENERATED CODE ---")
 print(code)
 print("----------------------")
 
-# 2. DISCRIMINATOR (Test the code)
 print("\nTesting Function...")
 
-# Check 1: Syntax
 try:
     ast.parse(code)
     syntax_ok = True
 except:
     syntax_ok = False
 
-# Check 2: Algorithm (Did it cheat and use .sort()?)
 algo_ok = "sort(" not in code and "sorted(" not in code
 
-# Check 3: Functional Test (Does it actually sort?)
 try:
     namespace = {}
     exec(code, namespace)
@@ -63,7 +55,6 @@ try:
 except:
     func_ok = False
 
-# 3. FINAL RESULT
 print(f"Syntax Check: {syntax_ok}")
 print(f"Algorithm Check (No built-in sort): {algo_ok}")
 print(f"Functional Test: {func_ok}")
