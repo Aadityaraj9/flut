@@ -1,17 +1,14 @@
 import ollama
 
-# 1. Generate code using Ollama
 print("Generating code...")
 prompt = "Write a Python function named factorial that takes a non-negative integer n. Return ONLY the Python code. No markdown, no explanations."
 response = ollama.generate(model="qwen2.5-coder:7b", prompt=prompt)
 
-# Clean the response
 code = response["response"].replace("```python", "").replace("```", "").strip()
 print("\n--- GENERATED CODE ---")
 print(code)
 print("----------------------\n")
 
-# 2. Test the generated code
 print("Testing Function...")
 namespace = {}
 exec(code, namespace)
@@ -28,7 +25,6 @@ for n, expected in test_cases:
     else:
         print(f"factorial({n}) = {result} (Expected: {expected}) -> FAIL")
 
-# 3. Final Result
 print("-" * 40)
 print(f"Test Cases Passed: {passed}/{len(test_cases)}")
 if passed == len(test_cases):
