@@ -1,94 +1,75 @@
-import 'package:flutter/material.dart';
+import ollama
+import ast
 
-void main() {
-  runApp(const MyApp());
-}
+# 1. GENERATOR (Ask CodeGemma)
+print("Generating code using CodeGemma...")
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+# FIX 1: Move """ to the left and add a comment
+prompt = """def insertion_sort_function(arr):
+    # Write the insertion sort logic here
+"""
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: const MyHomePage(title: 'Responsive Dashboard'),
-    );
-  }
-}
+code = ""
+while True:
+    response = ollama.chat( 
+        model="codegemma:2b", 
+        messages=[{"role": "user", "content": prompt}],
+        options={"num_predict": 150} 
+    ) 
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+    raw_code = response["message"]["content"]
+    cleaned = raw_code.replace("```python", "").replace("```", "").strip()
+    start = cleaned.find("def insertion_sort_function")
+    
+    if start != -1:
+        code = cleaned[start:]
+        
+        # CHOP OFF everything after "return arr"
+        end = code.find("return arr")
+        if end != -1:
+            code = code[:end + 10]
+            
+            # FIX 2: Lowered to 20 so it doesn't get stuck in an infinite loop
+            if len(code) > 20 and "pass" not in code:
+                break
+                
+    print("AI format error. Retrying...")
 
-  final String title;
+print("\n--- GENERATED CODE ---")
+print(code)
+print("----------------------")
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
+# 2. DISCRIMINATOR (Test the code)
+print("\nTesting Function...")
 
-class _MyHomePageState extends State<MyHomePage> {
-  // These were for the counter; kept so you don't have to delete the lines.
-  int _counter = 0;
+# Check 1: Syntax
+try:
+    ast.parse(code)
+    syntax_ok = True
+except:
+    syntax_ok = False
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+# Check 2: Algorithm (Did it cheat and use .sort()?)
+algo_ok = "sort(" not in code and "sorted(" not in code
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          // Small screen (width < 600) → Column (stacked vertically)
-          if (constraints.maxWidth < 600) {
-            return const Column(
-              children: [
-                Card(
-                  child: ListTile(
-                    leading: Icon(Icons.people),
-                    title: Text('Students'),
-                  ),
-                ),
-                Card(
-                  child: ListTile(
-                    leading: Icon(Icons.book),
-                    title: Text('Courses'),
-                  ),
-                ),
-              ],
-            );
-          }
+# Check 3: Functional Test (Does it actually sort?)
+try:
+    namespace = {}
+    exec(code, namespace)
+    func = namespace["insertion_sort_function"]
+    test_array = [5, 2, 8, 1]
+    result = func(test_array)
+    func_ok = (result == [1, 2, 5, 8])
+except:
+    func_ok = False
 
-          // Large screen → Row (side by side, each takes half width)
-          return const Row(
-            children: [
-              Expanded(
-                child: Card(
-                  child: ListTile(
-                    leading: Icon(Icons.people),
-                    title: Text('Students'),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Card(
-                  child: ListTile(
-                    leading: Icon(Icons.book),
-                    title: Text('Courses'),
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-      // Replaced floatingActionButton with null so you don't need to delete the block
-      floatingActionButton: null,
-    );
-  }
-}
+# 3. FINAL RESULT
+print(f"Syntax Check: {syntax_ok}")
+print(f"Algorithm Check (No built-in sort): {algo_ok}")
+print(f"Functional Test: {func_ok}")
+
+if syntax_ok and algo_ok and func_ok:
+    print("Final Score: 100/100")
+    print("RESULT: ACCEPTED")
+else:
+    print("RESULT: REJECTED")
